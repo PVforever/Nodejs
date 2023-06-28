@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <button onclick="photos.click()">上傳圖片</button>
+    <pre id="info"></pre>
+
+    <form name="form1" hidden>
+      <input type="file" name="photos" accept="image/*" multiple />
+    </form>
+
+    <script>
+      const form1 = document.form1;
+      const photos = document.form1.photos;
+
+      photos.addEventListener("change", (event) => {
+        const fd = new FormData(form1);
+
+        fetch("/try-uploads", {
+          method: "POST",
+          body: fd,
+        })
+          .then((r) => r.json())
+          .then((data) => {
+            info.innerHTML = JSON.stringify(data, null, 4);
+          })
+          .catch((ex) => console.log(ex));
+      });
+    </script>
+  </body>
+</html>

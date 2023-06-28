@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="info">123</div>
+
+    <script>
+        const rel = /\d\d/;//  / 斜線為標示符號 /
+        const rel2 = /^\d\d/;
+
+        const str1 = 'A12';
+        const str2 = 'AB2';
+        const str3 = '34D';
+
+        console.log(rel.test(str1)); // true
+        console.log(rel.test(str2)); // false
+        console.log(rel.test(str3)); // true
+        
+        console.log(rel2.test(str1)); // false
+        console.log(rel2.test(str2)); // false
+        console.log(rel2.test(str3)); // true
+    </script>
+</body>
+</html>
