@@ -1,0 +1,46 @@
+<%- include('../parts/html-head') %>
+<%- include('../parts/navbar') %>
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination">
+                    <% for(let i=page-5; i<=page+5; i++) if(i>=1 && i<=totalPages){ %>
+                    <li class="page-item <%= i==page ? 'active' : '' %>">
+                        <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                    </li>
+                    <% } %>
+                </ul>
+            </nav>
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">姓名</th>
+                        <th scope="col">手機</th>
+                        <th scope="col">email</th>
+                        <th scope="col">生日</th>
+                        <th scope="col">地址</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% for(let r of rows){ %>
+                    <tr>
+                        <td><%= r.sid %></td>
+                        <td><%= r.name %></td>
+                        <td><%= r.mobile %></td>
+                        <td><%= r.email %></td>
+                        <td><%= r.birthday %></td>
+                        <td><%= r.address %></td>
+                    </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<%- include('../parts/scripts') %>
+<%- include('../parts/html-foot') %>
+
+
+
