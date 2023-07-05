@@ -3,7 +3,7 @@ const dayjs = require('dayjs');
 const db = require(__dirname + "/../modules/connect-db");
 const router = express.Router();
 
-//每頁呈現的資料數量
+//每頁呈現的資料數量//
 router.get('/', async (req, res)=>{
     let page = req.query.page || 1;
     page = parseInt(page);
