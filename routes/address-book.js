@@ -28,7 +28,7 @@ router.get('/', async (req, res)=>{
         })
 
     }
-
+    //
     // res.json({page, totalRows, totalPages, perPage, rows});
     res.render('address-book/list', {page, totalRows, totalPages, perPage, rows});
 });
