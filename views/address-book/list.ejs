@@ -5,33 +5,65 @@
         <div class="col">
             <nav aria-label="Page navigation example">
                 <ul class="pagination">
+                    <li class="page-item">
+                        <a class="page-link <%= 1==page ? 'disabled' : '' %>" href="?page=1">
+                            <i class="fa-solid fa-angles-left"></i>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link <%= 1==page ? 'disabled' : '' %>" href="?page=<%= page -1 %>">
+                            <i class="fa-solid fa-angle-left"></i>
+                        </a>
+                    </li>
                     <% for(let i=page-5; i<=page+5; i++) if(i>=1 && i<=totalPages){ %>
                     <li class="page-item <%= i==page ? 'active' : '' %>">
                         <a class="page-link" href="?page=<%= i %>"><%= i %></a>
                     </li>
                     <% } %>
+                    <li class="page-item">
+                        <a class="page-link <%= totalPages==page ? 'disabled' : '' %>" href="?page=<%= page +1 %>">
+                            <i class="fa-solid fa-angle-right"></i>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link <%= totalPages==page ? 'disabled' : '' %>" href="?page=<%= totalPages %>">
+                            <i class="fa-solid fa-angles-right"></i>
+                        </a>
+                    </li>
                 </ul>
             </nav>
             <table class="table table-bordered table-striped">
                 <thead>
                     <tr>
+                        <th scope="col">
+                            <i class="fa-solid fa-trash"></i>
+                        </th>
                         <th scope="col">#</th>
                         <th scope="col">姓名</th>
                         <th scope="col">手機</th>
                         <th scope="col">email</th>
                         <th scope="col">生日</th>
                         <th scope="col">地址</th>
+                        <th scope="col">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
                     <% for(let r of rows){ %>
                     <tr>
+                        <td>
+                            <a href="javascript: doDelete(<%= r.sid %>)"><i class="fa-solid fa-trash"></i></a>
+                        </td>
                         <td><%= r.sid %></td>
                         <td><%= r.name %></td>
                         <td><%= r.mobile %></td>
                         <td><%= r.email %></td>
                         <td><%= r.birthday %></td>
                         <td><%= r.address %></td>
+                        <td>
+                            <a href="/ab/edit/<%= r.sid %>"><i class="fa-solid fa-pen-to-square"></i></a>
+                        </td>
                     </tr>
                     <% } %>
                 </tbody>
@@ -40,6 +72,20 @@
     </div>
 </div>
 <%- include('../parts/scripts') %>
+<script>
+    function doDelete(sid){
+        fetch(`ab/delete/${sid}`, {
+            method: 'DELETE',
+        })
+        .then((r) => r.json())
+        .then((data) => {
+            console.log(data);
+            // document.querySelector('#my'+sid).remove();
+            location.reload();
+        })
+        .catch((ex) => console.log(ex));
+    }
+</script>
 <%- include('../parts/html-foot') %>
 
 
