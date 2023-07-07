@@ -55,7 +55,34 @@ defg
 ** 同頁面內的連結，抓指定id位置
 #abc
 
+--------------------------
+RESTful API
 
+新增資料
+    POST
+        /products
+
+讀取資料
+    GET
+        /products     #取得列表資料
+        /products/15  #取得單筆資料
+
+刪除資料
+    DELETE
+        /products/15
+
+修改資料
+    PUT
+        /products/15
+
+---------------------------
+
+相同來源的origin
+
+protocol, domain, port 這三者要相同才能連線
+
+---------------------------
+所有ajax都要透過http
 
 
 

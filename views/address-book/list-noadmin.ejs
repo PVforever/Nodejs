@@ -35,35 +35,19 @@
             <table class="table table-bordered table-striped">
                 <thead>
                     <tr>
-                        <th scope="col">
-                            <i class="fa-solid fa-trash"></i>
-                        </th>
                         <th scope="col">#</th>
                         <th scope="col">姓名</th>
                         <th scope="col">手機</th>
                         <th scope="col">email</th>
-                        <th scope="col">生日</th>
-                        <th scope="col">地址</th>
-                        <th scope="col">
-                            <i class="fa-solid fa-pen-to-square"></i>
-                        </th>
                     </tr>
                 </thead>
                 <tbody>
                     <% for(let r of rows){ %>
                     <tr id="my<%= r.sid %>">
-                        <td>
-                            <a href="javascript: doDelete(<%= r.sid %>)"><i class="fa-solid fa-trash"></i></a>
-                        </td>
                         <td><%= r.sid %></td>
                         <td><%= r.name %></td>
                         <td><%= r.mobile %></td>
                         <td><%= r.email %></td>
-                        <td><%= r.birthday %></td>
-                        <td><%= r.address %></td>
-                        <td>
-                            <a href="/ab/edit/<%= r.sid %>"><i class="fa-solid fa-pen-to-square"></i></a>
-                        </td>
                     </tr>
                     <% } %>
                 </tbody>
@@ -72,29 +56,6 @@
     </div>
 </div>
 <%- include('../parts/scripts') %>
-<script>
-    function doDelete(sid){
-
-        //按下刪除時，提示第幾筆資料是否確定刪除
-        const tr = $('#my'+sid);
-        if(! tr.length) return;
-        const name = tr.find('td').eq(2).text();
-        if(! confirm(`是否刪除編號為 ${sid + ' ' + name} 的資料?`)){
-            return;
-        };
-
-        fetch(`ab/delete/${sid}`, {
-            method: 'DELETE',
-        })
-        .then((r) => r.json())
-        .then((data) => {
-            console.log(data);
-            // document.querySelector('#my'+sid).remove();
-            location.reload();
-        })
-        .catch((ex) => console.log(ex));
-    }
-</script>
 <%- include('../parts/html-foot') %>
 
 

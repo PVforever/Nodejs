@@ -5,16 +5,35 @@ const session = require('express-session');
 const MysqlStore = require('express-mysql-session')(session);
 const multer = require('multer');
 const moment = require('moment-timezone');
+const cors = require('cors');
+const bcrypt = require('bcryptjs');
 // const upload = multer({dest: 'tmp_uploads/'});
 const upload = require(__dirname + '/modules/upload-img');
 
 const db = require(__dirname + '/modules/connect-db');
-const sessionStore = new MysqlStore({}, db);
+const sessionStore = new MysqlStore({}, db);  //資料庫資料夾自動產生
 const app = express();
 
-app.set('view engine', 'ejs');
+app.set('view engine', 'ejs');  // 偵測檔案副檔名
 
 //top-level middleware
+const whiteList = ['http:/localhost:5500', 'http://127.0.0.1:5500']
+const corsOptions = {
+    credentials: true,
+    origin: function(origin, cb){
+        // console.log({origin})
+        // if(whiteList.includes(origin)){
+        //     cb(null, true);
+        // }else{
+        //     cb(null, false);
+        // }
+        // cb(null, whiteList.includes(origin));
+        cb(null, true);
+    }
+}
+
+
+app.use(cors(corsOptions));
 app.use(session({
     saveUninitialized: false,
     resave: false,
@@ -26,10 +45,10 @@ app.use(session({
 }));
 
 //top-level middleware
-app.use(express.urlencoded({extended: false}));
-app.use(express.json());
+app.use(express.urlencoded({extended: false}));  //解析通過 POST 請求發送的 URL 編碼形式的數據，並指定不使用第三方庫來解析
+app.use(express.json()); //將讓 Express 能夠解析請求資料中的 JSON 數據
 
-//自訂的middleware
+//自訂的middleware (須放在引入資料後面、路由前面)
 app.use((req, res, next)=>{
     // 放在res.locals裡的變數會自動傳到 template
 
@@ -134,42 +153,77 @@ app.get('/logout', (req,res) => {
     res.redirect('/');
 })
 //驗證
-app.post('/login', upload.none(), (req,res) => {
+// app.post('/login', upload.none(), (req,res) => {
+//     const output = {
+//         success: false,
+//         code: 0,
+//         msg: ''
+//       };
+
+//     const accounts = {
+//     shin: {
+//         pw: '234567',
+//         nickname: '大明'
+//     },
+//     david: {
+//         pw: '567890',
+//         nickname: '小華'
+//     },
+// }
+// const {account, password} = req.body;
+//     if(!accounts[account]){
+//         output.code = 400;
+//         output.msg = '帳號錯誤';
+//         return res.json(output);
+//     }
+//     if(accounts[account].pw === password){
+//         output.success = true;
+//         req.session.admin = {
+//             account,
+//             nickname: accounts[account].nickname
+//         }
+//     }else{
+//         output.code = 420;
+//         output.msg = '密碼錯誤';
+//     }
+
+//     res.json(output);
+// })
+
+//比對資料表的登入方式
+app.post('/login', upload.none(), async (req, res) => {
     const output = {
-        success: false,
-        code: 0,
-        msg: ''
-      };
-
-    const accounts = {
-    shin: {
-        pw: '234567',
-        nickname: '大明'
-    },
-    david: {
-        pw: '567890',
-        nickname: '小華'
-    },
-}
-const {account, password} = req.body;
-    if(!accounts[account]){
-        output.code = 400;
-        output.msg = '帳號錯誤';
-        return res.json(output);
+      success: false,
+      code: 0,
+      msg: ''
+    };
+  
+    const {account, password} = req.body;
+    // 1. 看帳號是不是對的
+  
+    const sql = "SELECT * FROM admins WHERE account=?";
+    const [rows] = await db.query(sql, [account])
+    if(! rows.length){
+      output.code = 400;
+      output.msg = '帳號或密碼錯誤';
+      return res.json(output);
     }
-    if(accounts[account].pw === password){
-        output.success = true;
-        req.session.admin = {
-            account,
-            nickname: accounts[account].nickname
-        }
-    }else{
-        output.code = 420;
-        output.msg = '密碼錯誤';
+    const row = rows[0];
+  
+    // 2. 比對密碼
+    if(await bcrypt.compare(password, row.hash)){
+      output.success = true;
+  
+      req.session.admin = {
+        account,
+        nickname: row.nickname
+      }
+    } else {
+      output.code = 420;
+      output.msg = '帳號或密碼錯誤';
     }
-
     res.json(output);
-})
+  });
 
 //抓幾筆資料顯示
 app.get('/try-db', async (req, res) => {
@@ -179,6 +233,21 @@ app.get('/try-db', async (req, res) => {
 
     res.json({rows, fields});
 })
+
+//練習 : 測試釣魚網站(偽裝成yahoo)
+app.get('/pinterest', async (req, res)=>{
+    const r = await fetch('https://www.pinterest.com/')
+    const data = await r.text();
+    res.send(data);
+})
+
+//練習 : 雜湊
+app.get('/try-bcrypt', async (req, res)=>{
+    const password = 'abc123';
+    const hash = await bcrypt.hash(password, 10);
+    res.json({hash})
+  
+  });
 
 //靜態內容的資料夾
 app.use(express.static('public'));
